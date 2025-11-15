@@ -55,10 +55,11 @@ struct cs_task *cs_tq_next(struct cs_task_queue* queue)
     return queue->tasks[queue->current++];
 }
 
-struct cs_task *cs_task_generate_rand(int min_complexity, int max_complexity)
+struct cs_task *cs_task_generate_rand(int min_complexity, int max_complexity, struct global_simulation_config *config)
 {
 
-    return cs_task_alloc((rand() % (200 * max_complexity - 50 * min_complexity + 1)) + 50 * min_complexity,
+    return cs_task_alloc((rand() % (config->max_time_of_execution * max_complexity - config->min_time_of_execution * min_complexity + 1)) +
+                        config->min_time_of_execution * min_complexity,
                          (1 << (rand() & (MAX_PROCESSORS_NUM))) | (rand() % (1 << MAX_PROCESSORS_NUM)));
 }
 

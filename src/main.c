@@ -5,6 +5,7 @@
 
 int main() {
     struct cs_scheduler *sched;
+    struct global_simulation_config *config;
     int ret;
 
     srand(time(NULL));
@@ -16,6 +17,12 @@ int main() {
     ret = cs_scheduler_init(sched);
     if (ret)
         return ret;
+
+    config = create_global_config();
+    if (!config)
+        return EINVAL;
+
+    sched->config = config;
 
     ret = cs_scheduler_ops_init(sched, strategy_to_ops_map[CS_SCHED_WEAKEST]);
     if (ret)

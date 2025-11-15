@@ -1,7 +1,9 @@
 #include <scheduler.h>
 #include <stdlib.h>
-#include <util.h>
-#include <config.h>
+
+extern const struct cs_scheduler_ops cs_fifo_scheduler_ops;
+extern const struct cs_scheduler_ops cs_weakest_processor_scheduler_ops;
+extern const struct cs_scheduler_ops cs_strongest_processor_scheduler_ops;
 
 static inline int get_min_computing_power(struct cs_scheduler *scheduler)
 {
@@ -47,7 +49,6 @@ static void cs_scheduler_show_running_stats(struct cs_scheduler *scheduler)
 int cs_scheduler_reset(struct cs_scheduler *scheduler)
 {
     scheduler->time_left = MAX_TIME_OF_EXECUTION;
-    scheduler->task_probability = 0;
     for (int i = scheduler->queue.current; i < scheduler->queue.size; i++)
     {
         if (cs_tq_cur(&scheduler->queue))
@@ -80,9 +81,9 @@ int cs_scheduler_run(struct cs_scheduler *scheduler)
 
     for(;scheduler->time_left; scheduler->time_left--)
     {
-         if (rand() % 100 < scheduler->task_probability)
+         if (rand() % 100 < scheduler->config->task_creation_probability)
         {
-            task = cs_task_generate_rand(min_complexity, max_complexity);
+            task = cs_task_generate_rand(min_complexity, max_complexity, scheduler->config);
             if (!task)
             {
                 cs_debug("task allocation failed");
@@ -126,6 +127,8 @@ int cs_scheduler_init(struct cs_scheduler *scheduler)
     if (ret)
     {
         cs_debug("scheduler task queue allocation failed");
+        if (scheduler->config)
+            free(scheduler->config);
         for (int j = 0; j < MAX_PROCESSORS_NUM; j++)
             if (scheduler->processors[j])
                 free(scheduler->processors[j]);
@@ -160,7 +163,8 @@ int cs_scheduler_destroy(struct cs_scheduler *scheduler)
             scheduler->processors[i] = NULL;
         }
     }
-
+    if (scheduler->config)
+        free(scheduler->config);
     ret = cs_tq_destroy(&scheduler->queue);
     if (ret)
         return ret;

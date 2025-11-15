@@ -2,6 +2,7 @@
 #define CS_LAB1_TASK_H
 #include <util.h>
 #include <stdbool.h>
+#include <config.h>
 
 #define MAX_TASKS_IN_QUEUE MAX_TIME_OF_EXECUTION
 
@@ -19,7 +20,7 @@ struct cs_task_queue {
 
 struct cs_task *cs_task_alloc(int complexity, int can_be_executed_on);
 
-struct cs_task *cs_task_generate_rand(int min_complexity, int max_complexity);
+struct cs_task *cs_task_generate_rand(int min_complexity, int max_complexity, struct global_simulation_config *config);
 
 int cs_tq_init(struct cs_task_queue*);
 int cs_tq_destroy(struct cs_task_queue*);

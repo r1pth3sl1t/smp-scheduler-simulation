@@ -4,7 +4,7 @@
 
 #define DEBUG 0
 #define MAX_TIME_OF_EXECUTION 10000
-#define MAX_PROCESSORS_NUM 5
+#define MAX_PROCESSORS_NUM 10
 
 #define cs_info(fmt, ...) do { printf("[INFO] " fmt "\n", ##__VA_ARGS__); } while (0)
 
